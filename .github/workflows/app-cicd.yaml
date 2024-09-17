@@ -12,7 +12,7 @@ jobs:
   app-deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@4
+    - uses: actions/checkout@v4
     - run: docker build -t app-backend:0.1 .
       working-directory: api-backend/
       name: build backend image
