@@ -3,3 +3,17 @@ name: Application CI/CD
 on:
   push:
     branches: ["main", "staging", "feature/**"]
+
+permissions: 
+  id-token: write # permissions inside of AWS
+  contents: read # permissions to checkout the repo
+
+job:
+  app-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@4
+    - run: docker build -t app-backend:0.1 .
+      working-directory: api-backend/
+      name: build backend image
+
