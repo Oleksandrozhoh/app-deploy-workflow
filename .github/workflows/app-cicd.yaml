@@ -40,8 +40,9 @@ jobs:
         docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-    - name: log in to ekc 
-      run: aws eks update-kubeconfig --name dev-cluster
+    - name: log in to eks cluster
+      run: aws eks update-kubeconfig --name dev_cluster
+      
     - name: deploy the app
       working-directory: api-backend/
       run: kubectl apply -f k8s/backend-deployment.yaml
