@@ -11,9 +11,32 @@ permissions:
 jobs:
   app-deploy:
     runs-on: ubuntu-latest
+    environment: production
+
     steps:
     - uses: actions/checkout@v4
-    - run: docker build -t app-backend:0.1 .
+
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ vars.ROLE_TO_ASSUME }}
+        role-session-name: "test-app-deploy-session"
+        aws-region: "us-east-1"
+
+    - name: Login to ECR
+      id: login-ecr
+      using: aws-actions/amazon-ecr-login@v2
+
+    - name: build backend image
+      run: docker build -t backend:0.1 .
       working-directory: api-backend/
-      name: build backend image
+
+    - name: push docker image to Amazon ECR
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: backend
+        IMAGE_TAG: 0.1
+      run: |
+        docker tag $REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
